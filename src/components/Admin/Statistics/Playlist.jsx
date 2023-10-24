@@ -1,9 +1,9 @@
 import React, { useContext, useEffect } from 'react';
-import organizationContext from '../../../context/organization/organizationContext';
+import adminContext from '../../../context/admin/adminContext';
 
 const PlaylistStatistics = ()=> {
     
-    const context = useContext(organizationContext);
+    const context = useContext(adminContext);
 
     const { playLists, getPlayLists } = context;
 
