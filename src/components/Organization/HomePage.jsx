@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Users from "./Statistics/Users";
-import PlaylistStatistics from "../Admin/Statistics/Playlist";
+import PlaylistStatistics from "./Statistics/Playlist";
 const HomePageOrganization = ()=>{
     
     let navigate = useNavigate();

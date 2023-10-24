@@ -5,11 +5,11 @@ const PlaylistStatistics = ()=> {
     
     const context = useContext(organizationContext);
 
-    const { playLists, getPlayLists } = context;
+    const { playListsOrganiztion, getPlayListsAll } = context;
 
     useEffect(() => {
-        if(playLists.length === 0){
-            getPlayLists();
+        if(playListsOrganiztion.length === 0){
+            getPlayListsAll();
         }
         // eslint-disable-next-line
     }, [])
@@ -33,7 +33,7 @@ const PlaylistStatistics = ()=> {
                     </thead>
                     <tbody className='bg-black dark:bg-gray-900 dark:border-gray-700'>
                         {
-                            playLists.map((user)=>{
+                            playListsOrganiztion.map((user)=>{
                                 return <tr key={user._id} className='text-center bg-black border-b dark:bg-gray-900 dark:border-gray-700'>
                                     <td className="px-6 py-4">
                                         {user.title}

@@ -14,7 +14,7 @@ const OrganizationState = (props) => {
     const [progressInfo, setProgressInfo] = useState([])
     const [updatedEmployee, setUpdatedEmployee] = useState([])
     const [categories,setCategories] = useState([])
-    const [playLists,setPlayLists] = useState([])
+    const [playListsOrganiztion,setPlayLists] = useState([])
     const getUser = async () => {
         if (!localStorage.getItem('token')) {
             navigate('/');
@@ -237,7 +237,7 @@ const OrganizationState = (props) => {
 
     }
 
-    const getPlayLists = async( ) => {
+    const getPlayListsAll = async( ) => {
         const res = await axios({
             url:`${host}/organization/playlists`,
             method:"GET",
@@ -258,7 +258,7 @@ const OrganizationState = (props) => {
     };
     return (
         <>
-            <OrganizationContext.Provider value={{ loggedInUser, getUser, imageHost, getUsers, getPackageForOrganization, users, addUser, showToastMessage, packages, handleCategoryAdd, editUserC, deleteUser, handeleAssignRemoveCategory, updatedEmployee, getNotAssignedCategories , getAllCategories,categories,getVideosProgress,progressInfo,getPlayLists,playLists}}>
+            <OrganizationContext.Provider value={{ loggedInUser, getUser, imageHost, getUsers, getPackageForOrganization, users, addUser, showToastMessage, packages, handleCategoryAdd, editUserC, deleteUser, handeleAssignRemoveCategory, updatedEmployee, getNotAssignedCategories , getAllCategories,categories,getVideosProgress,progressInfo,getPlayListsAll,playListsOrganiztion}}>
                 {props.children}
             </OrganizationContext.Provider>
 
