@@ -7,12 +7,11 @@ const Users = ()=> {
 
     const { users, getUsers } = context;
     const [filteredUsers, setFilteredUsers] = useState([]);
-    console.log(users[0])
 
     const [selection, setSelection] = useState("Today");
 
     const filterToday = () => {
-        console.log("Function Called")
+        // console.log("Function Called")
         if(users.length === 0){
             getUsers();
         }

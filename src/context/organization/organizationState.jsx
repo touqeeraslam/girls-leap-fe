@@ -14,6 +14,7 @@ const OrganizationState = (props) => {
     const [progressInfo, setProgressInfo] = useState([])
     const [updatedEmployee, setUpdatedEmployee] = useState([])
     const [categories,setCategories] = useState([])
+    const [playLists,setPlayLists] = useState([])
     const getUser = async () => {
         if (!localStorage.getItem('token')) {
             navigate('/');
@@ -28,7 +29,7 @@ const OrganizationState = (props) => {
         });
 
         const json = await response.json();
-        console.log(json)
+        // console.log(json)
         if (json.user.role === "Org") {
             setLoggedInUser(json.user);
         }
@@ -235,6 +236,21 @@ const OrganizationState = (props) => {
         }
 
     }
+
+    const getPlayLists = async( ) => {
+        const res = await axios({
+            url:`${host}/organization/playlists`,
+            method:"GET",
+            headers:{
+                "auth-token":localStorage.getItem("token")
+            }
+        })
+        const json = res.data;
+        if(json.success){
+            console.log(json)
+            setPlayLists(json.playlists)
+        }
+    }
     const showToastMessage = (message, type) => {
         toast(message, {
             type: type
@@ -242,7 +258,7 @@ const OrganizationState = (props) => {
     };
     return (
         <>
-            <OrganizationContext.Provider value={{ loggedInUser, getUser, imageHost, getUsers, getPackageForOrganization, users, addUser, showToastMessage, packages, handleCategoryAdd, editUserC, deleteUser, handeleAssignRemoveCategory, updatedEmployee, getNotAssignedCategories , getAllCategories,categories,getVideosProgress,progressInfo}}>
+            <OrganizationContext.Provider value={{ loggedInUser, getUser, imageHost, getUsers, getPackageForOrganization, users, addUser, showToastMessage, packages, handleCategoryAdd, editUserC, deleteUser, handeleAssignRemoveCategory, updatedEmployee, getNotAssignedCategories , getAllCategories,categories,getVideosProgress,progressInfo,getPlayLists,playLists}}>
                 {props.children}
             </OrganizationContext.Provider>
 

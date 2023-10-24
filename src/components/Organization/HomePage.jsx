@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Users from "./Statistics/Users";
+import PlaylistStatistics from "../Admin/Statistics/Playlist";
 const HomePageOrganization = ()=>{
     
     let navigate = useNavigate();
@@ -24,20 +25,11 @@ const HomePageOrganization = ()=>{
                         <Users/> 
                     </div>
                     <div className="mx-4 w-1/2">
-                        {/* <Payments/> */}
+                    <PlaylistStatistics/>
                     </div>
                 </div>
             </div>
-            <div className="p-4 sm:ml-64 mt-4 mb-8">
-                <div className="w-full flex flex-row p-4 mt-4 dark:border-gray-700 max-h-[350px] mb-4">
-                    <div className="w-1/2">
-                        {/* <PlaylistStatistics/> */}
-                    </div>
-                    <div className="mx-4 w-1/2">
-                        {/* <VideoStatistics/> */}
-                    </div>
-                </div>
-            </div>
+            
         </>
     );
 

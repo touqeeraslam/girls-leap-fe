@@ -52,7 +52,7 @@ const SideBar = ()=>{
                                             alt=""
                                         /> 
                                     }
-                                    <span className="ml-3 text-2xl">{loggedInUser.name.substring(0,8)}</span>
+                                    <span className="ml-3 text-2xl">{loggedInUser.name.substring(0,10)}</span>
                                 </a>
                             </li>
                             <li>
