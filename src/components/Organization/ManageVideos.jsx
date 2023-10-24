@@ -25,7 +25,6 @@ const AssignVideosOrganization = () => {
     const [videoID,setVideoID] = useState("")
     useEffect(() => {
         getUsers();
-        getAllVideos();
         getAllCategories()
         setLoading(false);
         // eslint-disable-next-line

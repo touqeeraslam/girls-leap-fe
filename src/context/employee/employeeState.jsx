@@ -147,7 +147,7 @@ const EmployeeState = (props) => {
     }
     await axios({
       method: "POST",
-      url: `${host}/videos/update-view-count/${slug}`,
+      url: `${host}/videos/employee/update-view-count/${slug}`,
       headers: {
         "auth-token": localStorage.getItem("token"),
       },
