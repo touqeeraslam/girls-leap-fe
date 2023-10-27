@@ -53,10 +53,12 @@ const AssignVideosOrganization = () => {
             showToastMessage("Please Select At least One Category", "info")
         }
         else {
+            setIsLoading(true)
             const addCategory = await handleCategoryAdd(selectedId, selectedCategory);
             if (addCategory === true) {
                 setSelectedId("")
                 setSelectedCategory("")
+                setIsLoading(false)
                 closeModal()
             }
         }
@@ -94,12 +96,14 @@ const AssignVideosOrganization = () => {
     }
 
     const videoDelete = async() => {
+        setIsLoading(true)
         const delVideo = await handeleAssignRemoveCategory(userWithAssignedVideosID, videoID);
         if (delVideo === true) {
             setUserWithAssignedVideos(updatedEmployee)
             setUserWithAssignedVideosID("")
             setShowDelModal(false)
             setShowAssignedVideosModal(false)
+            setIsLoading(false)
         }
     }
     return (

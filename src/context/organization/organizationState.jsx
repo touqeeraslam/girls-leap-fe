@@ -5,9 +5,10 @@ import { toast } from 'react-toastify';
 import axios from "axios";
 const OrganizationState = (props) => {
     let navigate = useNavigate();
-    const host = "http://localhost:5000/api";
+    // const host = "http://localhost:5000/api";
+    const host = "https://gl2.ithawks.pk/api";
 
-    const imageHost = "http://localhost:5000/";
+    const imageHost = "https://gl2.ithawks.pk";
     const [loggedInUser, setLoggedInUser] = useState();
     const [users, setUsers] = useState([]);
     const [packages, setPackages] = useState([]);

@@ -4,8 +4,8 @@ import { useNavigate} from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const host = "http://localhost:5000/api";
-//  const host = "https://gl2.theitking.pk/api";
+// const host = "http://localhost:5000/api";
+ const host = "https://gl2.ithawks.pk/api";
 
 const AuthState = (props)=> {
 
@@ -63,7 +63,7 @@ const AuthState = (props)=> {
         if(json.success){
             setPackages(json.package);
             console.log(json.package)
-            return json.allPackages;
+            return json.package;
         }else{
             showToastMessage("Error retrieving packages!","warning");
             return null;

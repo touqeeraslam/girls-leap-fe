@@ -277,16 +277,28 @@ function SignupForm() {
 
 
     const handleRadioChange = (e) => {
+        if (e.target.value === "Org"){
+            getPackageForOrganization()
+        }
+        else {
+            const pacakge = params.package;
+
+        if (pacakge !== undefined) {
+            getAllPackages(pacakge);
+        } else {
+            getAllPackages("");
+        }
+        }
         setRoleUser(e.target.value)
         setCredentials({ ...credentials, "role": e.target.value })
 
     }
-    if (roleUser === "Org") {
-        getPackageForOrganization()
-    }
-    if(roleUser == "Client") {
-      getAllPackages()
-    }
+    // if (roleUser === "Org") {
+    //     getPackageForOrganization()
+    // }
+    // if(roleUser == "Client") {
+    //   getAllPackages()
+    // }
     return (
         <div className="min-h-screen text-white bg-white-50 dark:bg-gray-900 flex justify-center ">
             <div className="max-w-screen-xl m-0 sm:m-10 shadow justify-center flex-1">
