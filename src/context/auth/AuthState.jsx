@@ -1,125 +1,123 @@
 import React, { useState } from 'react';
 import authContext from './authContext';
-import { useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-// const host = "http://localhost:5000/api";
- const host = "https://gl2.ithawks.pk/api";
+const host = "http://localhost:5000/api";
+//  const host = "https://gl2.ithawks.pk/api";
 
-const AuthState = (props)=> {
+const AuthState = (props) => {
 
     const history = useNavigate();
 
     // login page
-    const Login = async(credentials)=>{
-        const response = await axios.post(`${host}/auth/login`,credentials);
+    const Login = async (credentials) => {
+        const response = await axios.post(`${host}/auth/login`, credentials);
         const json = response.data;
         // console.log(json);
-        if(json.success){
+        if (json.success) {
             localStorage.setItem('token', json.authToken);
-            if(json.userRole  === "admin"){
+            if (json.userRole === "admin") {
                 history("/admin");
-            }else if(json.userRole === "coach"){
+            } else if (json.userRole === "coach") {
                 history("/coach");
             }
-           else if(json.userRole  === "Org"){
+            else if (json.userRole === "Org") {
                 history("/organization");
             }
-            else if(json.userRole === "employee"){
-                history("/employee")
-            }
-            else{
+        
+            else {
                 history("/");
             }
-        }else{
-            showToastMessage(json.error,"error");
+        } else {
+            showToastMessage(json.error, "error");
         }
     }
-    
+
     // signup page
     const [packages, setPackages] = useState([]);
 
-    const getPackages = async()=>{
-        const response = await fetch(`${host}/packages/getall/`,{
+    const getPackages = async () => {
+        const response = await fetch(`${host}/packages/getall/`, {
             method: 'GET'
         });
         const json = await response.json();
-        if(json.success){
+        if (json.success) {
             setPackages(json.allPackages);
             return json.allPackages;
-        }else{
-            showToastMessage("Error retrieving packages!","warning");
+        } else {
+            showToastMessage("Error retrieving packages!", "warning");
             return null;
         }
-    } 
-
-
-    const getPackageForOrganization = async () => {
-        const response = await fetch(`${host}/packages/get/org`,{
-            method: 'GET'
-        });
-        const json = await response.json();
-        if(json.success){
-            setPackages(json.package);
-            console.log(json.package)
-            return json.package;
-        }else{
-            showToastMessage("Error retrieving packages!","warning");
-            return null;
-        }
-       
     }
 
 
-    const showToastMessage = (message,type) => {
+    const getPackageForOrganization = async () => {
+        const response = await fetch(`${host}/packages/get/org`, {
+            method: 'GET'
+        });
+        const json = await response.json();
+        if (json.success) {
+            setPackages(json.package);
+            console.log(json.package)
+            return json.package;
+        } else {
+            showToastMessage("Error retrieving packages!", "warning");
+            return null;
+        }
+
+    }
+
+
+    const showToastMessage = (message, type) => {
         toast(message, {
             type: type
         });
     };
 
-    const signUpSubmit = async(data)=>{
+    const signUpSubmit = async (data) => {
         const signUpUser = await axios({
             method: "POST",
             url: `${host}/auth/createuser`,
             data: data,
             headers: {
-                'Content-Type':"multipar/form-data"
+                'Content-Type': "multipar/form-data"
             }
         })
-        
+
         const json = signUpUser.data;
-        if(json.success){
-            showToastMessage(json.message,"success");
+        if (json.success) {
+            showToastMessage(json.message, "success");
             return true;
-        }else{
-            showToastMessage(`Error: ${json.error}`,"error");
+        } else {
+            showToastMessage(`Error: ${json.error}`, "error");
             return false;
         }
     }
 
     // reset-password
-    const resetPassword = async(credentials)=>{
+    const resetPassword = async (credentials) => {
         const resetPass = await axios({
             method: "POST",
             url: `${host}/users/update-password`,
             data: credentials,
-            headers:{
+            headers: {
                 "Content-Type": "application/json"
             }
         });
         let data = resetPass.data;
-        if(data.success){
-            showToastMessage(data.message,"success");
+        if (data.success) {
+            showToastMessage(data.message, "success");
             return true;
-        }else{
-            showToastMessage(data.message,"error");
+        } else {
+            showToastMessage(data.message, "error");
             return false;
         }
     }
 
     // resent email verification
-    const sendPasswordResetOTP = async(email)=>{
+    const sendPasswordResetOTP = async (email) => {
         const subConfirm = await axios({
             method: "POST",
             url: `${host}/users/send-otp/`,
@@ -132,11 +130,11 @@ const AuthState = (props)=> {
         });
 
         const res = subConfirm.data;
-        if(res.success){
-            showToastMessage(res.message,"success");
+        if (res.success) {
+            showToastMessage(res.message, "success");
             return true;
-        }else{
-            showToastMessage(res.message,"error");
+        } else {
+            showToastMessage(res.message, "error");
             return false;
         }
     }
@@ -146,39 +144,39 @@ const AuthState = (props)=> {
     const [emailVerificationSuccess, setEmailVerificationSuccess] = useState(false);
     const [emailVerificationFailure, setEmailVerificationFailure] = useState(false);
     const [workingOnIt, setWorkingOnIt] = useState(true);
-    
-    const verifyEmailAddress = async (id,token)=>{
+
+    const verifyEmailAddress = async (id, token) => {
         try {
             const url = `${host}/auth/${id}/verify/${token}`;
-            const {data} = await axios.get(url);
-            if(data.success){
+            const { data } = await axios.get(url);
+            if (data.success) {
                 setWorkingOnIt(false);
                 setEmailVerificationSuccess(true);
                 const user = data.updatedUser;
-                if(user.paymentMethod === "credit"){
+                if (user.paymentMethod === "credit") {
                     const confirmPayment = `${host}/auth/user/payment/${id}`;
                     let result = await axios.post(confirmPayment);
-                    if(result.data.success){
-                        showToastMessage(result.data.message,"success");
-                    }else{
-                        showToastMessage(result.data.message,"error");
+                    if (result.data.success) {
+                        showToastMessage(result.data.message, "success");
+                    } else {
+                        showToastMessage(result.data.message, "error");
                     }
-                }else{
+                } else {
                     // free subscription endpoint
                     const confirmSubs = await axios({
                         method: "POST",
                         url: `${host}/auth/user/free/${id}`
                     });
                     let resData = confirmSubs.data;
-                    if(resData.success){
-                        showToastMessage(resData.message,"success");
-                    }else{
-                        showToastMessage(resData.message,"error");
+                    if (resData.success) {
+                        showToastMessage(resData.message, "success");
+                    } else {
+                        showToastMessage(resData.message, "error");
                     }
                 }
                 await timeout(2500);
                 history('/auth/login');
-            }else{
+            } else {
                 setWorkingOnIt(false);
                 setEmailVerificationFailure(true);
             }
@@ -191,12 +189,14 @@ const AuthState = (props)=> {
 
     // utility
     function timeout(delay) {
-        return new Promise( res => setTimeout(res, delay) );
+        return new Promise(res => setTimeout(res, delay));
     }
-    
-    return <authContext.Provider value={{Login, 
+
+    return <authContext.Provider value={{
+        Login,
         emailVerificationFailure, emailVerificationSuccess, workingOnIt,
-        verifyEmailAddress, sendPasswordResetOTP, timeout, getPackages,getPackageForOrganization, packages, resetPassword, host, showToastMessage, signUpSubmit}}>
+        verifyEmailAddress, sendPasswordResetOTP, timeout, getPackages, getPackageForOrganization, packages, resetPassword, host, showToastMessage, signUpSubmit
+    }}>
         {props.children}
     </authContext.Provider>
 }

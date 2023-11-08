@@ -111,11 +111,11 @@ function App() {
               <Route path='assign-categories' element={<AssignVideosOrganization />}></Route>
             </Route>
 
-            <Route path='/employee' element={<HomeEmployee />}>
+            {/* <Route path='/employee' element={<HomeEmployee />}>
               <Route index element={<HomePageEmployee />}></Route>
               <Route path="playlist/:playlistname" element={<PlayListPageEmployee/>}/>
               <Route path="playlist/videos/:videoname" element={<ViewVideoEmployee/>}/>
-            </Route>
+            </Route> */}
             
             <Route path='*' element={<PageNotFound />}/>
 

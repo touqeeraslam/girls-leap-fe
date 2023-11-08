@@ -5,10 +5,10 @@ import { toast } from 'react-toastify';
 import axios from "axios";
 const OrganizationState = (props) => {
     let navigate = useNavigate();
-    // const host = "http://localhost:5000/api";
-    const host = "https://gl2.ithawks.pk/api";
-
-    const imageHost = "https://gl2.ithawks.pk";
+    const host = "http://localhost:5000/api";
+    // const host = "https://gl2.ithawks.pk/api";
+    const imageHost = "http://localhost:5000/"
+    // const imageHost = "https://gl2.ithawks.pk";
     const [loggedInUser, setLoggedInUser] = useState();
     const [users, setUsers] = useState([]);
     const [packages, setPackages] = useState([]);
@@ -16,6 +16,10 @@ const OrganizationState = (props) => {
     const [updatedEmployee, setUpdatedEmployee] = useState([])
     const [categories,setCategories] = useState([])
     const [playListsOrganiztion,setPlayLists] = useState([])
+    const [videosForEmployee,setVideosForEmployee] = useState([])
+    const [playlistsForEmployee,setPlaylistsForEmployee] = useState([])
+
+    
     const getUser = async () => {
         if (!localStorage.getItem('token')) {
             navigate('/');
@@ -128,11 +132,6 @@ const OrganizationState = (props) => {
         }
     }
 
-   
-
-
-
-
 
     //Get All Categories By Organization ID
     const getAllCategories = async()=> {
@@ -198,11 +197,12 @@ const OrganizationState = (props) => {
         }
         return true;
     }
-    const handeleAssignRemoveCategory = async (UserID, VideoID) => {
+    //Remove an assigned item from user
+    const handeleAssignRemoveCategory = async (UserID, VideoID,type) => {
         const req = await axios({
             url: `${host}/organization/remove-category`,
             method: "POST",
-            data: { userId: UserID, categoryId: VideoID },
+            data: { userId: UserID, delId: VideoID ,type},
             headers: {
                 "auth-token": localStorage.getItem("token")
             }
@@ -217,8 +217,6 @@ const OrganizationState = (props) => {
             showToastMessage(json.error, "error")
         }
     }
-
-
     //Progress Report of Employee
     const getVideosProgress = async(userID) => {
         console.log(userID)
@@ -237,7 +235,7 @@ const OrganizationState = (props) => {
         }
 
     }
-
+     //Get All Playlists Of Organization
     const getPlayListsAll = async( ) => {
         const res = await axios({
             url:`${host}/organization/playlists`,
@@ -252,6 +250,93 @@ const OrganizationState = (props) => {
             setPlayLists(json.playlists)
         }
     }
+
+    const getVideosForAssign = async(userId) => {
+        const res = await axios({
+            method:"POST",
+            url:`${host}/organization/videos`,
+            data:{userId},
+            headers:{
+                "auth-token":localStorage.getItem("token")
+            }
+    
+        })
+        const json = res.data;
+        if(json.success){
+            setVideosForEmployee(json.videos)
+            console.log(json.videos)
+        }
+    }
+    
+    const handleVideoAdd = async (id, videos) => {
+        const req = await axios({
+            url: `${host}/organization/assign-video`,
+            method: "POST",
+            data: {
+                id: id,
+                videos: videos
+            },
+            headers: {
+                "auth-token": localStorage.getItem("token")
+            }
+        })
+        const json = req.data;
+        if (json.success) {
+            showToastMessage(json.message, "success")
+            await getUsers()
+            return true;
+        }
+        else {
+            showToastMessage(json.error, "error")
+            return false;
+        }
+
+
+    }
+
+    const getPlaylistsForAssign = async(userId) => {
+        const res = await axios({
+            method:"POST",
+            url:`${host}/organization/playlists`,
+            data:{userId},
+            headers:{
+                "auth-token":localStorage.getItem("token")
+            }
+    
+        })
+        const json = res.data;
+        if(json.success){
+            setPlaylistsForEmployee(json.PlayLists)
+            console.log(json.PlayLists)
+        }
+    }
+
+    const handlePlaylistAdd = async (id, playlists) => {
+        const req = await axios({
+            url: `${host}/organization/assign-playlist`,
+            method: "POST",
+            data: {
+                id: id,
+                playlists: playlists
+            },
+            headers: {
+                "auth-token": localStorage.getItem("token")
+            }
+        })
+        const json = req.data;
+        if (json.success) {
+            showToastMessage(json.message, "success")
+            await getUsers()
+            return true;
+        }
+        else {
+            showToastMessage(json.error, "error")
+            return false;
+        }
+
+
+    }
+    
     const showToastMessage = (message, type) => {
         toast(message, {
             type: type
@@ -259,7 +344,7 @@ const OrganizationState = (props) => {
     };
     return (
         <>
-            <OrganizationContext.Provider value={{ loggedInUser, getUser, imageHost, getUsers, getPackageForOrganization, users, addUser, showToastMessage, packages, handleCategoryAdd, editUserC, deleteUser, handeleAssignRemoveCategory, updatedEmployee, getNotAssignedCategories , getAllCategories,categories,getVideosProgress,progressInfo,getPlayListsAll,playListsOrganiztion}}>
+            <OrganizationContext.Provider value={{ loggedInUser, getUser, imageHost, getUsers, getPackageForOrganization, users, addUser, showToastMessage, packages, handleCategoryAdd, editUserC, deleteUser, handeleAssignRemoveCategory, updatedEmployee, getNotAssignedCategories , getAllCategories,categories,getVideosProgress,progressInfo,getPlayListsAll,playListsOrganiztion,videosForEmployee,playlistsForEmployee,getVideosForAssign,handleVideoAdd,getPlaylistsForAssign,handlePlaylistAdd}}>
                 {props.children}
             </OrganizationContext.Provider>
 

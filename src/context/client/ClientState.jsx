@@ -4,13 +4,13 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const host = "https://gl2.ithawks.pk/api";
+// const host = "https://gl2.ithawks.pk/api";
 // const host = "https://portal2.ithawks.pk/api";
 
 // const host = "https://gl2.theitking.pk/api";
 // const imageHost = "https://gl2.theitking.pk/";
 
-// const host = "http://localhost:5000/api";
+const host = "http://localhost:5000/api";
 // const imageHost = "http://localhost:5000/";
 
 const imageHost = "https://gl2.ithawks.pk/";
@@ -22,11 +22,15 @@ const ClientState = (props) => {
   const [myContinueWatchingSection, setMyContinueWatchingSection] = useState(
     []
   );
+  const [user, setUser] = useState(null);
+  const [role, setRole] = useState("")
+ 
   const [slides, setSlides] = useState([]);
 
   let navigate = useNavigate();
 
   // notifcation
+
   const showToastMessage = (message, type) => {
     toast(message, {
       type: type,
@@ -56,18 +60,30 @@ const ClientState = (props) => {
       setMyList(json.listItems);
     }
   };
+  const getUserLoggedIn = async () => {
+    const response = await axios(`${host}/auth/getuser`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": localStorage.getItem("token"),
+      },
+    });
+    const json = await response.data;
+    if (json.success) {
+      setUser(json.user);
+      console.log("user",user)
+    }
+  };
 
   const getContinueSection = async () => {
-    const response = await fetch(
-      `${host}/continuesection/getmycontinuesection`,
-      {
-        method: "GET",
-        headers: {
-          "auth-token": localStorage.getItem("token"),
-        },
+    const response = await axios({
+      url:`${host}/continuesection/getmycontinuesection`,
+      method:"GET",
+      headers:{
+        "auth-token":localStorage.getItem("token")
       }
-    );
-    const json = await response.json();
+    })
+    const json = await response.data;
     if (json.success) {
       setMyContinueWatchingSection(json.filteredList);
     }
@@ -134,6 +150,8 @@ const ClientState = (props) => {
   const [playListLocked, setPlayListLocked] = useState(false);
   const [playListViewCount, setPlayListViewCount] = useState(0);
 
+
+
   const getPlayList = async (slug) => {
     // playlist
     const response = await fetch(`${host}/playlist/getlist/${slug}`, {
@@ -187,7 +205,28 @@ const ClientState = (props) => {
   const [userLoggedIn, setUserLoggedIn] = useState(false);
 
   const checkAvailability = async (slug) => {
-    const check = await axios({
+    const response = await axios(`${host}/auth/getuser`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": localStorage.getItem("token"),
+      },
+    });
+    const json = await response.data;
+    if (json.success) {
+      setUser(json.user);
+     if(json.user.role === "employee"){
+      const check = await axios({
+        method: "GET",
+        url: `${host}/videos/check-availability/employee/${slug}`,
+        headers: {
+          "auth-token": localStorage.getItem("token"),
+        },
+      });
+      const data = check.data;
+      return data.success;
+     }
+     const check = await axios({
       method: "GET",
       url: `${host}/videos/check-availability/${slug}`,
       headers: {
@@ -196,6 +235,8 @@ const ClientState = (props) => {
     });
     const data = check.data;
     return data.success;
+    }
+   
   };
 
   const getLoggedInUser = async () => {
@@ -654,7 +695,6 @@ const ClientState = (props) => {
   const [navBarItems, setNavBarItems] = useState([
     { name: "BROWSE", href: "/", type: "page" },
   ]);
-  const [user, setUser] = useState(null);
 
   const getNavItem = async () => {
     const saveItem = await axios({
@@ -676,20 +716,7 @@ const ClientState = (props) => {
     }
   };
 
-  const getUserLoggedIn = async () => {
-    const response = await fetch(`${host}/auth/getuser`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token": localStorage.getItem("token"),
-      },
-    });
-    const json = await response.json();
-    console.log(json)
-    if (json.success) {
-      setUser(json.user);
-    }
-  };
+ 
 
   // coach page
   const [coach, setCoach] = useState(null);

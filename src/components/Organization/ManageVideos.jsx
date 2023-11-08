@@ -9,7 +9,7 @@ const AssignVideosOrganization = () => {
 
     const context = useContext(organizationContext);
 
-    const { getUsers,  users,  getAllVideos, handleCategoryAdd ,handeleAssignRemoveCategory , updatedEmployee,getNotAssignedCategories,getAllCategories,categories} = context;
+    const { getUsers, users, handleCategoryAdd, handeleAssignRemoveCategory, updatedEmployee, getNotAssignedCategories, getAllCategories, categories, getVideosForAssign, playlistsForEmployee, videosForEmployee, handleVideoAdd, getPlaylistsForAssign, handlePlaylistAdd } = context;
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [showAssignedVideosModal, setShowAssignedVideosModal] = useState(false)
@@ -18,11 +18,15 @@ const AssignVideosOrganization = () => {
 
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState([]);
+    const [data, setData] = useState([])
+
+    const [selectedModal, setSelectedModal] = useState("")
     const [userWithAssignedVideos, setUserWithAssignedVideos] = useState([])
-    const [userWithAssignedVideosID,setUserWithAssignedVideosID] = useState("")
+    const [userWithAssignedVideosID, setUserWithAssignedVideosID] = useState("")
     const [showDelModal, setShowDelModal] = useState(false);
-    const [videoID,setVideoID] = useState("")
+    const [delID ,setDelId] = useState("")
+    const [type, setType] = useState("")
+
     useEffect(() => {
         getUsers();
         getAllCategories()
@@ -33,15 +37,32 @@ const AssignVideosOrganization = () => {
 
 
 
-    const editUserModal = async(id) => {
-           await getNotAssignedCategories(id);   
-            setSelectedId(id)
-            setShowModal(true);
-        
-        
+    const editUserModal = async (id) => {
+        setIsButtonDisabled(true)
+        setSelectedModal("categories")
+        await getNotAssignedCategories(id);
+        setSelectedId(id)
+        setShowModal(true);
     }
 
+    const assignVideoModal = async (id) => {
+        setIsButtonDisabled(true)
+        setSelectedModal("videos")
+        await getVideosForAssign(id)
+        setSelectedId(id)
+        setShowModal(true)
+    }
+
+    const assignPlaylistModal = async (id) => {
+        setIsButtonDisabled(true)
+        setSelectedModal("playlists")
+        await getPlaylistsForAssign(id)
+        setSelectedId(id)
+        setShowModal(true)
+    }
     const closeModal = () => {
+        setIsButtonDisabled(true)
+        setSelectedModal("")
         setShowModal(false);
         setShowAssignedVideosModal(false)
     }
@@ -49,15 +70,46 @@ const AssignVideosOrganization = () => {
 
     const categoryAdd = async () => {
         // console.log("id",selectedId)
-        if (selectedCategory == "" || selectedCategory == null) {
-            showToastMessage("Please Select At least One Category", "info")
+        if (data === "" || data === null) {
+            showToastMessage("Please Select At least One item", "info")
         }
         else {
             setIsLoading(true)
-            const addCategory = await handleCategoryAdd(selectedId, selectedCategory);
+            const addCategory = await handleCategoryAdd(selectedId, data);
             if (addCategory === true) {
                 setSelectedId("")
-                setSelectedCategory("")
+                setData([])
+                setIsLoading(false)
+                closeModal()
+            }
+        }
+    }
+
+    const videoAdd = async () => {
+        if (data === "" || data === null) {
+            showToastMessage("Please Select At least One item", "info")
+        }
+        else {
+            setIsLoading(true)
+            const addCategory = await handleVideoAdd(selectedId, data);
+            if (addCategory === true) {
+                setSelectedId("")
+                setData([])
+                setIsLoading(false)
+                closeModal()
+            }
+        }
+    }
+    const playlistAdd = async () => {
+        if (data === "" || data === null) {
+            showToastMessage("Please Select At least One item", "info")
+        }
+        else {
+            setIsLoading(true)
+            const addCategory = await handlePlaylistAdd(selectedId, data);
+            if (addCategory === true) {
+                setSelectedId("")
+                setData([])
                 setIsLoading(false)
                 closeModal()
             }
@@ -72,32 +124,42 @@ const AssignVideosOrganization = () => {
     };
 
 
-    const options = categories?.map((categories) => ({
+    const categoriesForAssign = categories?.map((categories) => ({
         value: categories._id, label: categories.title
     }))
 
-    const handleCategoryChange = (selectedOptions) => {
+    const playlistsForAssign = playlistsForEmployee?.map((categories) => ({
+        value: categories._id, label: categories.title
+    }))
+
+    const videosForAssign = videosForEmployee?.map((categories) => ({
+        value: categories._id, label: categories.title
+    }))
+
+    const handleChange = (selectedOptions) => {
+        setIsButtonDisabled(false)
         const filterId = selectedOptions.map((e) => e.value)
-        setSelectedCategory(filterId);
+        setData(filterId);
     };
 
 
     const handleAssignedModel = (user) => {
         setUserWithAssignedVideos(user)
         setUserWithAssignedVideosID(user._id)
+        // console.log(user._id)
         setShowAssignedVideosModal(true)
-        console.log(userWithAssignedVideos)
+        // console.log(userWithAssignedVideos)
     }
 
-    const handleRemoveVideo = (id) => {
-        console.log(id)
-        setVideoID(id)
+    const handleRemoveVideo = (id,type) => {
+        setDelId(id)
+        setType(type)
         setShowDelModal(true)
     }
 
-    const videoDelete = async() => {
+    const videoDelete = async () => {
         setIsLoading(true)
-        const delVideo = await handeleAssignRemoveCategory(userWithAssignedVideosID, videoID);
+        const delVideo = await handeleAssignRemoveCategory(userWithAssignedVideosID, delID,type);
         if (delVideo === true) {
             setUserWithAssignedVideos(updatedEmployee)
             setUserWithAssignedVideosID("")
@@ -106,6 +168,7 @@ const AssignVideosOrganization = () => {
             setIsLoading(false)
         }
     }
+
     return (
         <>
             {
@@ -121,7 +184,9 @@ const AssignVideosOrganization = () => {
                                                 <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                                                     <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
                                                         <h3 className="text-3xl font-semibold">
-                                                            Assign Category to User
+                                                            {selectedModal === "videos" && "Assign Videos To Employee"}
+                                                            {selectedModal === "playlists" && "Assign Playlists To Employee"}
+                                                            {selectedModal === "categories" && "Assign Categories To Employee"}
                                                         </h3>
                                                         <button
                                                             className="p-1 ml-auto bg-transparent border-0 text-black float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
@@ -131,12 +196,14 @@ const AssignVideosOrganization = () => {
                                                         <form encType="multipart/form-data" className="w-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                                                             <div className="mb-4">
                                                                 <label className="block text-gray-700 text-sm font-bold mb-2 lg:w-[500px] md:w-1/2" htmlFor="name">
-                                                                    Categories
-                                                                </label>
-                                                                <Select options={options} isMulti onChange={handleCategoryChange} />
+                                                                    List                                          </label>
+                                                                {selectedModal === "categories" && <Select options={categoriesForAssign} isMulti onChange={handleChange} />}
+                                                                {selectedModal === "playlists" && <Select options={playlistsForAssign} isMulti onChange={handleChange} />}
+                                                                {selectedModal === "videos" && <Select options={videosForAssign} isMulti onChange={handleChange} />}
+
                                                             </div>
                                                             <div className="flex items-center justify-between">
-                                                                <button
+                                                                {selectedModal === "categories" && <button
                                                                     disabled={isButtonDisabled} onClick={categoryAdd}
                                                                     type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                                                                     {
@@ -144,7 +211,25 @@ const AssignVideosOrganization = () => {
                                                                             <ButtonLoader />
                                                                         ) : "Save"
                                                                     }
-                                                                </button>
+                                                                </button>}
+                                                                {selectedModal === "videos" && <button
+                                                                    disabled={isButtonDisabled} onClick={videoAdd}
+                                                                    type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                                                    {
+                                                                        isLoading ? (
+                                                                            <ButtonLoader />
+                                                                        ) : "Save"
+                                                                    }
+                                                                </button>}
+                                                                {selectedModal === "playlists" && <button
+                                                                    disabled={isButtonDisabled} onClick={playlistAdd}
+                                                                    type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                                                    {
+                                                                        isLoading ? (
+                                                                            <ButtonLoader />
+                                                                        ) : "Save"
+                                                                    }
+                                                                </button>}
                                                             </div>
                                                         </form>
                                                     </div>
@@ -161,7 +246,7 @@ const AssignVideosOrganization = () => {
                                                 <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                                                     <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
                                                         <h3 className="text-3xl font-semibold">
-                                                            Assigned Categories 
+                                                            Assigned Categories
                                                         </h3>
                                                         <button
                                                             className="p-1 ml-auto bg-transparent border-0 text-black float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
@@ -175,25 +260,30 @@ const AssignVideosOrganization = () => {
                                                                         <th scope="col" className="flex flex-row px-6 py-3">
                                                                             Title
                                                                         </th>
+                                                                        <th scope="col" className=" px-6 py-3">
+                                                                            Type
+                                                                        </th>
                                                                         <th scope="col" className="px-6 py-3">
                                                                             Actions
                                                                         </th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    {userWithAssignedVideos?.categories?.map((categories) => {
-                                                                        return <tr className="bg-black border-b dark:bg-gray-900 dark:border-gray-700 text-white dark:text-black">
+                                                                    {[
+                                                                        ...userWithAssignedVideos.categories.map((category) => ({ ...category, type: 'category' })),
+                                                                        ...userWithAssignedVideos.playlists.map((playlist) => ({ ...playlist, type: 'playlist' })),
+                                                                        ...userWithAssignedVideos.videos.map((video) => ({ ...video, type: 'video' })),
+                                                                    ].map((item) => (
+                                                                        <tr className="bg-black border-b dark:bg-gray-900 dark:border-gray-700 text-white dark:text-black" key={item._id}>
+                                                                            <td className="px-6 py-4">{item.title}</td>
+                                                                            <td className="px-6 py-4">{item.type}</td>
                                                                             <td className="px-6 py-4">
-                                                                                {categories.title} 
+                                                                                <button onClick={() => handleRemoveVideo(item._id, item.type)} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                                                                    Remove
+                                                                                </button>
                                                                             </td>
-                                                                            <td className="px-6 py-4">
-                                                                                <button onClick={() => handleRemoveVideo(categories._id)} className="font-medium text-blue-600 dark:text-blue-500 hover:underline"> Remove</button>
-                                                                            </td>
-
-
                                                                         </tr>
-
-                                                                    })}
+                                                                    ))}
                                                                 </tbody>
 
                                                             </table>
@@ -207,39 +297,39 @@ const AssignVideosOrganization = () => {
                                         <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
                                     </>
                                 ) : null}
-                                   {
-                                    showDelModal ? 
-                                    <>
-                                    <div  className="w-full justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-                                            <div className="relative w-auto my-6 mx-auto max-w-3xl w-auto">
-                                                <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-                                                <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
-                                                    <h3 className="text-xl font-semibold">
-                                                        Are you sure you want to delete this assigned Category?
-                                                    </h3>
-                                                </div>
-                                                <div className="flex items-center justify-end mt-4 mb-2 mx-2">
-                                                    <button 
-                                                        onClick={()=>{
-                                                            setShowDelModal(false);
-                                                           
-                                                        }}
-                                                    className="mx-1 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                                        Cancel
-                                                    </button>
-                                                    <button
-                                                        disabled={isButtonDisabled}
-                                                        onClick={videoDelete}
-                                                    className=" bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                                        {
-                                                            isLoading ? <ButtonLoader/> : "Confirm"
-                                                        }
-                                                    </button>
+                                {
+                                    showDelModal ?
+                                        <>
+                                            <div className="w-full justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+                                                <div className="relative w-auto my-6 mx-auto max-w-3xl w-auto">
+                                                    <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                                                        <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
+                                                            <h3 className="text-xl font-semibold">
+                                                                Are you sure you want to delete this assigned Category?
+                                                            </h3>
+                                                        </div>
+                                                        <div className="flex items-center justify-end mt-4 mb-2 mx-2">
+                                                            <button
+                                                                onClick={() => {
+                                                                    setShowDelModal(false);
+
+                                                                }}
+                                                                className="mx-1 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                                                Cancel
+                                                            </button>
+                                                            <button
+                                                                
+                                                                onClick={videoDelete}
+                                                                className=" bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                                                {
+                                                                    isLoading ? <ButtonLoader /> : "Confirm"
+                                                                }
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    </> : null
+                                        </> : null
                                 }
                             </div>
                             {loading ?
@@ -278,13 +368,19 @@ const AssignVideosOrganization = () => {
                                                         </td>
 
                                                         <td className="px-6 py-4">
-                                                            <button onClick={() => handleAssignedModel(user)} className="font-medium text-blue-600 dark:text-blue-500 hover:underline"> View/Remove Assigned Categories  </button>
+                                                            <button onClick={() => handleAssignedModel(user)} className="font-medium text-blue-600 dark:text-blue-500 hover:underline"> View/Remove</button>
                                                         </td>
 
                                                         <td className="px-6 py-4">
                                                             <button onClick={() => {
                                                                 editUserModal(user._id)
-                                                            }} className="font-medium text-blue-600 dark:text-blue-500 hover:underline"> Assign Categories  </button>
+                                                            }} className="font-medium text-blue-600 dark:text-blue-500 hover:underline px-2"> Assign Categories  </button>
+                                                            <button onClick={() => {
+                                                                assignVideoModal(user._id)
+                                                            }} className="font-medium text-blue-600 dark:text-blue-500 hover:underline px-2"> Assign Videos  </button>
+                                                            <button onClick={() => {
+                                                                assignPlaylistModal(user._id)
+                                                            }} className="font-medium text-blue-600 dark:text-blue-500 hover:underline px-2"> Assign Playlists  </button>
 
                                                         </td>
                                                     </tr>
