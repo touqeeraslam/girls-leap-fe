@@ -139,7 +139,7 @@ const ViewVideo = ()=>{
 
     const handleReady = async (player)=>{
         const addToMyList = await axios({
-            method: 'get',
+            method: 'GET',
             url: `${host}/continuesection/get-progress/${params.videoname}`,
             headers: {
                 'Content-Type' : "application/json",
@@ -153,6 +153,8 @@ const ViewVideo = ()=>{
             }
         }
     }
+  
+
 
     return (    
         <>

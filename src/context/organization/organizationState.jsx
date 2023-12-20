@@ -5,21 +5,25 @@ import { toast } from 'react-toastify';
 import axios from "axios";
 const OrganizationState = (props) => {
     let navigate = useNavigate();
-    const host = "http://localhost:5000/api";
+    // const host = "http://localhost:5000/api";
     // const host = "https://gl2.ithawks.pk/api";
-    const imageHost = "http://localhost:5000/"
+    // const imageHost = "http://localhost:5000/"
     // const imageHost = "https://gl2.ithawks.pk";
+
+    const host = "https://gl2.theitking.pk/api";
+    const imageHost = "https://gl2.theitking.pk/";
+
     const [loggedInUser, setLoggedInUser] = useState();
     const [users, setUsers] = useState([]);
     const [packages, setPackages] = useState([]);
     const [progressInfo, setProgressInfo] = useState([])
     const [updatedEmployee, setUpdatedEmployee] = useState([])
-    const [categories,setCategories] = useState([])
-    const [playListsOrganiztion,setPlayLists] = useState([])
-    const [videosForEmployee,setVideosForEmployee] = useState([])
-    const [playlistsForEmployee,setPlaylistsForEmployee] = useState([])
+    const [categories, setCategories] = useState([])
+    const [playListsOrganiztion, setPlayLists] = useState([])
+    const [videosForEmployee, setVideosForEmployee] = useState([])
+    const [playlistsForEmployee, setPlaylistsForEmployee] = useState([])
 
-    
+
     const getUser = async () => {
         if (!localStorage.getItem('token')) {
             navigate('/');
@@ -134,12 +138,12 @@ const OrganizationState = (props) => {
 
 
     //Get All Categories By Organization ID
-    const getAllCategories = async()=> {
+    const getAllCategories = async () => {
         const response = await axios({
             url: `${host}/organization/all-categories`,
             method: "GET",
-            headers:{
-                "auth-token":localStorage.getItem("token")
+            headers: {
+                "auth-token": localStorage.getItem("token")
             }
         })
         const json = await response.data;
@@ -198,11 +202,11 @@ const OrganizationState = (props) => {
         return true;
     }
     //Remove an assigned item from user
-    const handeleAssignRemoveCategory = async (UserID, VideoID,type) => {
+    const handeleAssignRemoveCategory = async (UserID, VideoID, type) => {
         const req = await axios({
             url: `${host}/organization/remove-category`,
             method: "POST",
-            data: { userId: UserID, delId: VideoID ,type},
+            data: { userId: UserID, delId: VideoID, type },
             headers: {
                 "auth-token": localStorage.getItem("token")
             }
@@ -218,56 +222,56 @@ const OrganizationState = (props) => {
         }
     }
     //Progress Report of Employee
-    const getVideosProgress = async(userID) => {
+    const getVideosProgress = async (userID) => {
         console.log(userID)
         const res = await axios({
-          method:"POST",
-          url:`${host}/organization/employee/progress-info`,
-          data:{userID},
-          headers:{
-            "auth-token":localStorage.getItem("token")
-          }
+            method: "POST",
+            url: `${host}/organization/employee/progress-info`,
+            data: { userID },
+            headers: {
+                "auth-token": localStorage.getItem("token")
+            }
         })
         const json = res.data;
         console.log(json)
-        if(json.success){
+        if (json.success) {
             setProgressInfo(json.progressInfo)
         }
 
     }
-     //Get All Playlists Of Organization
-    const getPlayListsAll = async( ) => {
+    //Get All Playlists Of Organization
+    const getPlayListsAll = async () => {
         const res = await axios({
-            url:`${host}/organization/playlists`,
-            method:"GET",
-            headers:{
-                "auth-token":localStorage.getItem("token")
+            url: `${host}/organization/playlists`,
+            method: "GET",
+            headers: {
+                "auth-token": localStorage.getItem("token")
             }
         })
         const json = res.data;
-        if(json.success){
+        if (json.success) {
             console.log(json)
             setPlayLists(json.playlists)
         }
     }
 
-    const getVideosForAssign = async(userId) => {
+    const getVideosForAssign = async (userId) => {
         const res = await axios({
-            method:"POST",
-            url:`${host}/organization/videos`,
-            data:{userId},
-            headers:{
-                "auth-token":localStorage.getItem("token")
+            method: "POST",
+            url: `${host}/organization/videos`,
+            data: { userId },
+            headers: {
+                "auth-token": localStorage.getItem("token")
             }
-    
+
         })
         const json = res.data;
-        if(json.success){
+        if (json.success) {
             setVideosForEmployee(json.videos)
             console.log(json.videos)
         }
     }
-    
+
     const handleVideoAdd = async (id, videos) => {
         const req = await axios({
             url: `${host}/organization/assign-video`,
@@ -294,18 +298,18 @@ const OrganizationState = (props) => {
 
     }
 
-    const getPlaylistsForAssign = async(userId) => {
+    const getPlaylistsForAssign = async (userId) => {
         const res = await axios({
-            method:"POST",
-            url:`${host}/organization/playlists`,
-            data:{userId},
-            headers:{
-                "auth-token":localStorage.getItem("token")
+            method: "POST",
+            url: `${host}/organization/playlists`,
+            data: { userId },
+            headers: {
+                "auth-token": localStorage.getItem("token")
             }
-    
+
         })
         const json = res.data;
-        if(json.success){
+        if (json.success) {
             setPlaylistsForEmployee(json.PlayLists)
             console.log(json.PlayLists)
         }
@@ -336,7 +340,7 @@ const OrganizationState = (props) => {
 
 
     }
-    
+
     const showToastMessage = (message, type) => {
         toast(message, {
             type: type
@@ -344,7 +348,7 @@ const OrganizationState = (props) => {
     };
     return (
         <>
-            <OrganizationContext.Provider value={{ loggedInUser, getUser, imageHost, getUsers, getPackageForOrganization, users, addUser, showToastMessage, packages, handleCategoryAdd, editUserC, deleteUser, handeleAssignRemoveCategory, updatedEmployee, getNotAssignedCategories , getAllCategories,categories,getVideosProgress,progressInfo,getPlayListsAll,playListsOrganiztion,videosForEmployee,playlistsForEmployee,getVideosForAssign,handleVideoAdd,getPlaylistsForAssign,handlePlaylistAdd}}>
+            <OrganizationContext.Provider value={{ loggedInUser, getUser, imageHost, getUsers, getPackageForOrganization, users, addUser, showToastMessage, packages, handleCategoryAdd, editUserC, deleteUser, handeleAssignRemoveCategory, updatedEmployee, getNotAssignedCategories, getAllCategories, categories, getVideosProgress, progressInfo, getPlayListsAll, playListsOrganiztion, videosForEmployee, playlistsForEmployee, getVideosForAssign, handleVideoAdd, getPlaylistsForAssign, handlePlaylistAdd }}>
                 {props.children}
             </OrganizationContext.Provider>
 

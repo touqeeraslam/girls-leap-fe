@@ -5,7 +5,7 @@ import Spinner from '../Loading/Spinner';
 const MyCategories = () => {
     const context = useContext(organizationContext)
     const [loading , setLoading] = useState(false)
-    const {getAllCategories , videos,categories} = context;
+    const {getAllCategories ,categories} = context;
 
     useEffect(()=>{
         setLoading(true)

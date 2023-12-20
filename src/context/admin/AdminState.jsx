@@ -7,11 +7,11 @@ import { useNavigate } from 'react-router-dom';
 // const host = "https://gl2.ithawks.pk/api";
 // const host = "https://portal2.ithawks.pk/api";
 
-// const host = "https://gl2.theitking.pk/api";
-// const imageHost = "https://gl2.theitking.pk/";
+const host = "https://gl2.theitking.pk/api";
+const imageHost = "https://gl2.theitking.pk/";
 
-const host = "http://localhost:5000/api";
-const imageHost = "http://localhost:5000/";
+// const host = "http://localhost:5000/api";
+// const imageHost = "http://localhost:5000/";
 
 // const imageHost = "https://gl2.ithawks.pk";
 // const imageHost = "https://portal2.ithawks.pk/";

@@ -48,10 +48,7 @@ import HomePageOrganization from './components/Organization/HomePage';
 import UsersTabOrganization from './components/Organization/UsersTab';
 import MyCategories from './components/Organization/MyCategories'
 import AssignVideosOrganization from './components/Organization/ManageVideos';
-import HomeEmployee from './components/Employee/HomeEmployee';
-import HomePageEmployee from './components/Employee/HomePage';
-import ViewVideoEmployee from './components/Employee/VideoView';
-import PlayListPageEmployee from './components/Employee/PlayListPage'
+
 function App() {
   return (
     <>
@@ -111,11 +108,7 @@ function App() {
               <Route path='assign-categories' element={<AssignVideosOrganization />}></Route>
             </Route>
 
-            {/* <Route path='/employee' element={<HomeEmployee />}>
-              <Route index element={<HomePageEmployee />}></Route>
-              <Route path="playlist/:playlistname" element={<PlayListPageEmployee/>}/>
-              <Route path="playlist/videos/:videoname" element={<ViewVideoEmployee/>}/>
-            </Route> */}
+           
             
             <Route path='*' element={<PageNotFound />}/>
 

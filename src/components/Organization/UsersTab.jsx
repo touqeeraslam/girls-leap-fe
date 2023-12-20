@@ -401,7 +401,7 @@ const UsersTabOrganization = () => {
                                                             </thead>
                                                             <tbody>
                                                                 {progressInfo?.map((progress) => {
-                                                                    const progressSeconds = progress?.progress;
+                                                                    const progressSeconds = progress?.progressTime;
                                                                     const progressMinutes = Math.floor(progressSeconds / 60);
                                                                     const remainingSeconds = Math.round(progressSeconds % 60);
 

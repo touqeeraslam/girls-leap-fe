@@ -7,13 +7,13 @@ import { useNavigate } from "react-router-dom";
 // const host = "https://gl2.ithawks.pk/api";
 // const host = "https://portal2.ithawks.pk/api";
 
-// const host = "https://gl2.theitking.pk/api";
-// const imageHost = "https://gl2.theitking.pk/";
+const host = "https://gl2.theitking.pk/api";
+const imageHost = "https://gl2.theitking.pk/";
 
-const host = "http://localhost:5000/api";
+// const host = "http://localhost:5000/api";
 // const imageHost = "http://localhost:5000/";
 
-const imageHost = "https://gl2.ithawks.pk/";
+// const imageHost = "https://gl2.ithawks.pk/";
 // const imageHost = "https://portal2.ithawks.pk/";
 
 const ClientState = (props) => {
@@ -23,8 +23,7 @@ const ClientState = (props) => {
     []
   );
   const [user, setUser] = useState(null);
-  const [role, setRole] = useState("")
- 
+
   const [slides, setSlides] = useState([]);
 
   let navigate = useNavigate();
@@ -71,16 +70,18 @@ const ClientState = (props) => {
     const json = await response.data;
     if (json.success) {
       setUser(json.user);
-      console.log("user",user)
+    }
+    else if (json.error) {
+      localStorage.removeItem("token")
     }
   };
 
   const getContinueSection = async () => {
     const response = await axios({
-      url:`${host}/continuesection/getmycontinuesection`,
-      method:"GET",
-      headers:{
-        "auth-token":localStorage.getItem("token")
+      url: `${host}/continuesection/getmycontinuesection`,
+      method: "GET",
+      headers: {
+        "auth-token": localStorage.getItem("token")
       }
     })
     const json = await response.data;
@@ -215,28 +216,28 @@ const ClientState = (props) => {
     const json = await response.data;
     if (json.success) {
       setUser(json.user);
-     if(json.user.role === "employee"){
+      if (json.user.role === "employee") {
+        const check = await axios({
+          method: "GET",
+          url: `${host}/videos/check-availability/employee/${slug}`,
+          headers: {
+            "auth-token": localStorage.getItem("token"),
+          },
+        });
+        const data = check.data;
+        return data.success;
+      }
       const check = await axios({
         method: "GET",
-        url: `${host}/videos/check-availability/employee/${slug}`,
+        url: `${host}/videos/check-availability/${slug}`,
         headers: {
           "auth-token": localStorage.getItem("token"),
         },
       });
       const data = check.data;
       return data.success;
-     }
-     const check = await axios({
-      method: "GET",
-      url: `${host}/videos/check-availability/${slug}`,
-      headers: {
-        "auth-token": localStorage.getItem("token"),
-      },
-    });
-    const data = check.data;
-    return data.success;
     }
-   
+
   };
 
   const getLoggedInUser = async () => {
@@ -281,7 +282,7 @@ const ClientState = (props) => {
         const formData = new FormData();
         formData.append("videoId", json.video._id);
         const addToMyList = await axios({
-          method: "post",
+          method: "POST",
           url: `${host}/continuesection/add-to-continue-section`,
           data: formData,
           headers: {
@@ -421,7 +422,7 @@ const ClientState = (props) => {
     });
     let subData = getSub.data;
     if (subData.success) {
-      setMySubscription(subData.type);
+      setMySubscription(subData);
     } else {
       if (localStorage.getItem("token")) {
         showToastMessage("Failed to retrieve subscription!", "error");
@@ -586,15 +587,32 @@ const ClientState = (props) => {
   const [packages, setPackages] = useState([]);
 
   const getPackages = async () => {
-    const response = await fetch(`${host}/packages/getall/`, {
-      method: "GET",
-    });
-    const json = await response.json();
-    if (json.success) {
-      setPackages(json.allPackages);
-    } else {
-      showToastMessage("Failed to retrieve pricing details!", "error");
+    if (localStorage.getItem("token")) {
+      const response = await fetch(`${host}/packages/getall/`, {
+        method: "GET",
+        headers: {
+          "auth-token": localStorage.getItem("token")
+        }
+      });
+      const json = await response.json();
+      if (json.success) {
+        setPackages(json.allPackages);
+      } else {
+        showToastMessage("Failed to retrieve pricing details!", "error");
+      }
     }
+    else {
+      const response = await fetch(`${host}/packages/getall/`, {
+        method: "GET",
+      });
+      const json = await response.json();
+      if (json.success) {
+        setPackages(json.allPackages);
+      } else {
+        showToastMessage("Failed to retrieve pricing details!", "error");
+      }
+    }
+
   };
 
   // payment checkout page
@@ -716,7 +734,7 @@ const ClientState = (props) => {
     }
   };
 
- 
+
 
   // coach page
   const [coach, setCoach] = useState(null);
@@ -799,6 +817,7 @@ const ClientState = (props) => {
       return false;
     }
   };
+
 
   return (
     <clientContext.Provider
